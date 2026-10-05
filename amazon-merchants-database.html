@@ -1,0 +1,1386 @@
+<title>Amazon Merchants Database</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap');
+
+  /* Layout: single-column document with grouped merchant cards */
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --fg: #1A1A1A;
+    --fg-muted: #6B6B6B;
+    --accent: #ff4a1f;
+    --accent-soft: #FFF0EC;
+    --border: #E8E6E3;
+    --tag-bg: #F0EDEA;
+    --success: #1B8A5A;
+    --success-soft: #E8F5EE;
+    --warning: #B8860B;
+    --warning-soft: #FFF8E7;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121210;
+      --surface: #1E1E1B;
+      --fg: #E8E6E3;
+      --fg-muted: #9A9890;
+      --accent: #FF6B4A;
+      --accent-soft: #2A1A14;
+      --border: #333330;
+      --tag-bg: #2A2926;
+      --success: #3DC88A;
+      --success-soft: #142A1E;
+      --warning: #D4A840;
+      --warning-soft: #2A2210;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121210;
+    --surface: #1E1E1B;
+    --fg: #E8E6E3;
+    --fg-muted: #9A9890;
+    --accent: #FF6B4A;
+    --accent-soft: #2A1A14;
+    --border: #333330;
+    --tag-bg: #2A2926;
+    --success: #3DC88A;
+    --success-soft: #142A1E;
+    --warning: #D4A840;
+    --warning-soft: #2A2210;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    padding-inline: 20px;
+    padding-block: 0;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Fraunces', Georgia, serif;
+    text-wrap: balance;
+  }
+
+  .hero {
+    padding: 40px 0 24px;
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 32px;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero .subtitle {
+    font-size: 1.1rem;
+    color: var(--fg-muted);
+    margin: 0 0 16px;
+  }
+
+  .hero .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+  }
+
+  .hero .meta span {
+    background: var(--tag-bg);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  .section-header {
+    margin: 40px 0 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+    color: var(--accent);
+  }
+
+  .section-header p {
+    font-size: 0.9rem;
+    color: var(--fg-muted);
+    margin: 0;
+  }
+
+  .merchant-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .merchant-card:hover {
+    border-color: var(--accent);
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .brand-name {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .priority-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .priority-hot {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .priority-warm {
+    background: var(--warning-soft);
+    color: var(--warning);
+  }
+
+  .priority-new {
+    background: var(--success-soft);
+    color: var(--success);
+  }
+
+  .card-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px 24px;
+    margin-bottom: 16px;
+  }
+
+  .detail-item {
+    min-width: 0;
+  }
+
+  .detail-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-muted);
+    margin-bottom: 2px;
+  }
+
+  .detail-value {
+    font-size: 0.92rem;
+    font-weight: 500;
+    word-break: break-word;
+  }
+
+  .detail-value a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .detail-value a:hover {
+    text-decoration: underline;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    background: var(--tag-bg);
+    border-radius: 12px;
+    color: var(--fg-muted);
+  }
+
+  .outreach-note {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: var(--accent-soft);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .outreach-note strong {
+    color: var(--accent);
+  }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    background: var(--bg);
+    padding: 12px 0;
+    z-index: 10;
+  }
+
+  .filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--fg);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--accent);
+  }
+
+  .filter-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .tools-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 32px 0;
+  }
+
+  .tools-section h3 {
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+  }
+
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+  }
+
+  .tool-item {
+    padding: 12px 16px;
+    background: var(--tag-bg);
+    border-radius: 8px;
+  }
+
+  .tool-item .tool-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+
+  .tool-item .tool-desc {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+
+  .footer-note {
+    text-align: center;
+    color: var(--fg-muted);
+    font-size: 0.8rem;
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  .count-bar {
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+  }
+
+  @media (max-width: 500px) {
+    .hero h1 { font-size: 1.5rem; }
+    .card-details { grid-template-columns: 1fr; }
+    .merchant-card { padding: 16px; }
+  }
+</style>
+
+<div class="hero">
+  <h1>Amazon Merchants Database</h1>
+  <p class="subtitle">Curated list of Amazon brands ready for influencer affiliate outreach via ainfluencer</p>
+  <div class="meta">
+    <span>Updated Oct 2026</span>
+    <span>30+ Merchants</span>
+    <span>Beauty &middot; Fashion &middot; Home &middot; Tech &middot; Supplements</span>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterCards('all')">All</button>
+  <button class="filter-btn" onclick="filterCards('beauty')">Beauty</button>
+  <button class="filter-btn" onclick="filterCards('fashion')">Fashion</button>
+  <button class="filter-btn" onclick="filterCards('home')">Home</button>
+  <button class="filter-btn" onclick="filterCards('tech')">Tech</button>
+  <button class="filter-btn" onclick="filterCards('supplements')">Supplements</button>
+  <button class="filter-btn" onclick="filterCards('outdoor')">Outdoor</button>
+</div>
+
+<div class="count-bar" id="countBar">Showing all 30 merchants</div>
+
+<div id="merchantList">
+
+<!-- TIER 1: HOT LEADS - Already doing influencer/affiliate marketing -->
+
+<div class="section-header">
+  <h2>Tier 1: Hot Leads</h2>
+  <p>Already investing in influencer marketing or Amazon affiliate programs. Easiest to convert.</p>
+</div>
+
+<div class="merchant-card" data-category="tech">
+  <div class="card-top">
+    <h3 class="brand-name">Anker (AnkerDirect)</h3>
+    <span class="priority-badge priority-hot">Hot Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Tech / Electronics</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Est. Annual Revenue</div>
+      <div class="detail-value">$1.3B+ on Amazon</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founder / CEO</div>
+      <div class="detail-value">Steven Yang</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">LinkedIn</div>
+      <div class="detail-value"><a href="https://www.linkedin.com/in/steven-yang-2a228b5/" target="_blank">Steven Yang</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.anker.com" target="_blank">anker.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Email</div>
+      <div class="detail-value">sg@anker-in.com</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Chargers</span>
+    <span class="tag">Power Banks</span>
+    <span class="tag">Audio</span>
+    <span class="tag">Already uses influencers</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Anker already runs large-scale influencer campaigns. Pitch ainfluencer as a platform to scale their affiliate program across micro and mid-tier influencers they can't reach manually.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="beauty">
+  <div class="card-top">
+    <h3 class="brand-name">Hero Cosmetics (Mighty Patch)</h3>
+    <span class="priority-badge priority-hot">Hot Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Beauty / Skincare</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Est. Revenue</div>
+      <div class="detail-value">$100M+ (acquired for $630M)</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founder / CEO</div>
+      <div class="detail-value">Ju Rhyu</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">LinkedIn</div>
+      <div class="detail-value"><a href="https://www.linkedin.com/in/jurhyu/" target="_blank">Ju Rhyu</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.herocosmetics.us" target="_blank">herocosmetics.us</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Parent Company</div>
+      <div class="detail-value">Church & Dwight</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Acne Patches</span>
+    <span class="tag">#1 on Amazon Beauty</span>
+    <span class="tag">K-Beauty</span>
+    <span class="tag">Influencer-built brand</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Mighty Patch was literally built through influencer and Amazon traffic. Now owned by Church & Dwight, the marketing team is actively scaling influencer programs. Pitch volume and efficiency.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="beauty">
+  <div class="card-top">
+    <h3 class="brand-name">Medicube</h3>
+    <span class="priority-badge priority-hot">Hot Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Beauty / Skincare Devices</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Rank</div>
+      <div class="detail-value">#2 in Beauty Q3 2025</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founder</div>
+      <div class="detail-value">Kim Byung-hoon</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Parent Company</div>
+      <div class="detail-value">APR Corp (South Korea)</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://medicube.us" target="_blank">medicube.us</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Email</div>
+      <div class="detail-value">medicube_uscs@apr-in.com</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">K-Beauty</span>
+    <span class="tag">Collagen Masks</span>
+    <span class="tag">Beauty Devices</span>
+    <span class="tag">Has affiliate program</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Medicube already runs an affiliate program (medicube.us/pages/medicube-affiliate). Pitch ainfluencer as a way to recruit more affiliates and manage campaigns at scale.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="beauty">
+  <div class="card-top">
+    <h3 class="brand-name">BIODANCE</h3>
+    <span class="priority-badge priority-hot">Hot Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Beauty / Skincare</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Rank</div>
+      <div class="detail-value">#1 Face Masks on Amazon</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founder</div>
+      <div class="detail-value">Mihwa Kim</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">CEO</div>
+      <div class="detail-value">Park Jae-hyun</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://biodance.com" target="_blank">biodance.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Email (Wholesale)</div>
+      <div class="detail-value">contact_global@beautyselection.co.kr</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Collagen Masks</span>
+    <span class="tag">K-Beauty</span>
+    <span class="tag">Has ambassador program</span>
+    <span class="tag">Sephora</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> BIODANCE has an ambassador signup page (biodance.com/pages/ambassador-sign-up). They're actively recruiting influencers. Position ainfluencer as the platform to manage and scale this.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="tech">
+  <div class="card-top">
+    <h3 class="brand-name">Govee</h3>
+    <span class="priority-badge priority-hot">Hot Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Tech / Smart Home Lighting</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Est. Revenue</div>
+      <div class="detail-value">$400M+ on Amazon</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founder / CEO</div>
+      <div class="detail-value">Eric Wu (Wu Wenlong)</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">LinkedIn</div>
+      <div class="detail-value"><a href="https://www.linkedin.com/in/joannajingsiyang/" target="_blank">Joanna Yang (Marketing)</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://us.govee.com" target="_blank">us.govee.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">PR Email</div>
+      <div class="detail-value">govee@teamlewis.com</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">LED Lights</span>
+    <span class="tag">Smart Home</span>
+    <span class="tag">TikTok viral</span>
+    <span class="tag">Heavy influencer user</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Govee is one of the most influencer-active Amazon brands on TikTok and YouTube. Contact their PR team directly. Pitch consolidated influencer management through ainfluencer.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="fashion">
+  <div class="card-top">
+    <h3 class="brand-name">Dream Pairs</h3>
+    <span class="priority-badge priority-hot">Hot Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Fashion / Footwear</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Funding</div>
+      <div class="detail-value">$100M Series A</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founder</div>
+      <div class="detail-value">Brian Cao</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Parent Company</div>
+      <div class="detail-value">Miracle Miles Group Inc.</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.dreampairs.com" target="_blank">dreampairs.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Social</div>
+      <div class="detail-value"><a href="https://www.instagram.com/dreampairsshoes/" target="_blank">@dreampairsshoes</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Affordable Shoes</span>
+    <span class="tag">Amazon Native</span>
+    <span class="tag">Now in Retail</span>
+    <span class="tag">TikTok presence</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Dream Pairs just opened their first physical store and raised $100M. They're scaling aggressively. Pitch ainfluencer for Amazon affiliate campaigns to fuel growth.
+  </div>
+</div>
+
+<!-- TIER 2: WARM LEADS -->
+
+<div class="section-header">
+  <h2>Tier 2: Warm Leads</h2>
+  <p>Large Amazon presence with marketing budgets. Need education on influencer affiliate value.</p>
+</div>
+
+<div class="merchant-card" data-category="home">
+  <div class="card-top">
+    <h3 class="brand-name">Bedsure</h3>
+    <span class="priority-badge priority-warm">Warm Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Home / Bedding</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Growth</div>
+      <div class="detail-value">100%+ CAGR for 5 years</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">CEO</div>
+      <div class="detail-value">Josh Zhu</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Parent Company</div>
+      <div class="detail-value">Shinebed Global E-commerce</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://bedsurehome.com" target="_blank">bedsurehome.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Revenue</div>
+      <div class="detail-value">Top 10 DTC on Amazon</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Bedding</span>
+    <span class="tag">Pillows</span>
+    <span class="tag">Blankets</span>
+    <span class="tag">DTC + Amazon</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Bedsure's explosive Amazon growth makes them ideal. Bedding is a huge "#AmazonFinds" category on TikTok. Show them how influencers already promote bedding organically.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="outdoor">
+  <div class="card-top">
+    <h3 class="brand-name">Jackery</h3>
+    <span class="priority-badge priority-warm">Warm Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Outdoor / Portable Power</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founded</div>
+      <div class="detail-value">2012, Fremont CA</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founders</div>
+      <div class="detail-value">Anson Liang & York Wu</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.jackery.com" target="_blank">jackery.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Email</div>
+      <div class="detail-value">hello@jackery.com</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Phone</div>
+      <div class="detail-value">+1 888-502-2236</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Solar Generators</span>
+    <span class="tag">Power Stations</span>
+    <span class="tag">Camping</span>
+    <span class="tag">Top 10 DTC on Amazon</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Outdoor/camping influencers love portable power. Jackery's products are perfect for YouTube review and TikTok demo content. Pitch affiliate as performance-based channel.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="tech">
+  <div class="card-top">
+    <h3 class="brand-name">EF EcoFlow</h3>
+    <span class="priority-badge priority-warm">Warm Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Tech / Portable Power</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Revenue</div>
+      <div class="detail-value">Top 10 DTC on Amazon</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.ecoflow.com" target="_blank">ecoflow.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founded</div>
+      <div class="detail-value">2017, Shenzhen</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Power Stations</span>
+    <span class="tag">Solar Panels</span>
+    <span class="tag">Eco-Friendly</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Direct competitor to Jackery on Amazon. Pitch both and let whichever moves first set the urgency for the other. FOMO works in B2B too.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="home">
+  <div class="card-top">
+    <h3 class="brand-name">OLANLY</h3>
+    <span class="priority-badge priority-warm">Warm Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Home / Rugs & Mats</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Revenue</div>
+      <div class="detail-value">$1.3B+ estimated</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Rank</div>
+      <div class="detail-value">Top 5 third-party seller</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://theolanly.com" target="_blank">theolanly.com</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Bath Rugs</span>
+    <span class="tag">Kitchen Mats</span>
+    <span class="tag">Home Decor</span>
+    <span class="tag">Massive Amazon volume</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> $1.3B in Amazon revenue but limited brand awareness outside Amazon. Influencer content can build brand equity while driving affiliate sales. Use their website contact form.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="fashion">
+  <div class="card-top">
+    <h3 class="brand-name">PrettyGarden</h3>
+    <span class="priority-badge priority-warm">Warm Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Fashion / Women's Apparel</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Revenue</div>
+      <div class="detail-value">Top 10 DTC on Amazon</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founded</div>
+      <div class="detail-value">2005</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://prettygarden.com" target="_blank">prettygarden.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Email</div>
+      <div class="detail-value">services@prettygarden.com</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Instagram</div>
+      <div class="detail-value"><a href="https://www.instagram.com/shopprettygarden/" target="_blank">@shopprettygarden</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Dresses</span>
+    <span class="tag">Casual Wear</span>
+    <span class="tag">Affordable Fashion</span>
+    <span class="tag">#AmazonFashion</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Women's fashion is the #1 category for Amazon influencer content on TikTok/Instagram. PrettyGarden's affordable price points make them perfect for "haul" and "try-on" content.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="supplements">
+  <div class="card-top">
+    <h3 class="brand-name">Carlyle Nutritionals</h3>
+    <span class="priority-badge priority-warm">Warm Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Supplements / Vitamins</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Revenue</div>
+      <div class="detail-value">$1.2B+ estimated</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Rank</div>
+      <div class="detail-value">Top 5 third-party seller</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://carlylenutritionals.com" target="_blank">carlylenutritionals.com</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Vitamins</span>
+    <span class="tag">Minerals</span>
+    <span class="tag">Herbal Supplements</span>
+    <span class="tag">Massive catalog</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Health/wellness influencers are the fastest-growing segment. Carlyle's huge catalog means they can run campaigns across dozens of supplement niches simultaneously.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="supplements">
+  <div class="card-top">
+    <h3 class="brand-name">Pure Encapsulations</h3>
+    <span class="priority-badge priority-warm">Warm Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Supplements / Premium</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founder</div>
+      <div class="detail-value">Raymond F. Hamel</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">LinkedIn</div>
+      <div class="detail-value"><a href="https://www.linkedin.com/in/raymond-f-hamel-jr-1055ab8/" target="_blank">Raymond F. Hamel Jr.</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.pureencapsulationspro.com" target="_blank">pureencapsulationspro.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Phone</div>
+      <div class="detail-value">(800) 753-2277</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Location</div>
+      <div class="detail-value">Sudbury, MA</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Premium Supplements</span>
+    <span class="tag">Doctor-Recommended</span>
+    <span class="tag">Top 10 DTC on Amazon</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Premium positioning means they need trusted voices, not mass volume. Pitch curated wellness influencers and health professionals as affiliates.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="home">
+  <div class="card-top">
+    <h3 class="brand-name">Best Choice Products</h3>
+    <span class="priority-badge priority-warm">Warm Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Home / Outdoor / Toys</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Revenue</div>
+      <div class="detail-value">Top 10 DTC on Amazon</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://bestchoiceproducts.com" target="_blank">bestchoiceproducts.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Email</div>
+      <div class="detail-value">customerservice@bestchoiceproducts.com</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Phone</div>
+      <div class="detail-value">(844) 948-8400</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Location</div>
+      <div class="detail-value">Ontario, CA</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Furniture</span>
+    <span class="tag">Kids Toys</span>
+    <span class="tag">Outdoor</span>
+    <span class="tag">Wide catalog</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Their massive product range means you can match them with influencers across multiple niches. Start with their bestselling category (outdoor furniture) and expand.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="home">
+  <div class="card-top">
+    <h3 class="brand-name">Utopia Bedding</h3>
+    <span class="priority-badge priority-warm">Warm Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Home / Bedding</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Revenue</div>
+      <div class="detail-value">Top 10 DTC on Amazon</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://utopiabedding.com" target="_blank">utopiabedding.com</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Sheets</span>
+    <span class="tag">Comforters</span>
+    <span class="tag">Pillows</span>
+    <span class="tag">Budget-friendly</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Budget bedding is huge on Amazon and a staple of "dorm room haul" and "home refresh" content. Great fit for lifestyle and home decor influencers.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="home">
+  <div class="card-top">
+    <h3 class="brand-name">VEVOR / VEMIXO</h3>
+    <span class="priority-badge priority-warm">Warm Lead</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Home / Tools / Industrial</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Revenue</div>
+      <div class="detail-value">$1.2B+ estimated</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Rank</div>
+      <div class="detail-value">Top 5 third-party seller</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Note</div>
+      <div class="detail-value">VEMIXO is VEVOR's second storefront</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.vevor.com" target="_blank">vevor.com</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Tools</span>
+    <span class="tag">Equipment</span>
+    <span class="tag">Home Improvement</span>
+    <span class="tag">2 storefronts</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> DIY and tool review content on YouTube is massive. VEVOR's budget positioning makes them perfect for "tool test" and "Amazon finds" creators.
+  </div>
+</div>
+
+<!-- TIER 3: NEW OPPORTUNITIES -->
+
+<div class="section-header">
+  <h2>Tier 3: Emerging Opportunities</h2>
+  <p>Fast-growing brands on Amazon that should be running influencer programs but may not be yet.</p>
+</div>
+
+<div class="merchant-card" data-category="beauty">
+  <div class="card-top">
+    <h3 class="brand-name">CeraVe</h3>
+    <span class="priority-badge priority-new">Opportunity</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Beauty / Skincare</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Market Share</div>
+      <div class="detail-value">9.6% of Beauty category</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Reviews</div>
+      <div class="detail-value">1.8M+ reviews</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Parent Company</div>
+      <div class="detail-value">L'Oreal</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.cerave.com" target="_blank">cerave.com</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Skincare</span>
+    <span class="tag">Dermatologist-recommended</span>
+    <span class="tag">#1 Amazon Beauty brand</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> CeraVe dominates Amazon Beauty with 9.6% market share. L'Oreal has the budget. Target their Amazon/e-commerce marketing team via LinkedIn for Amazon-specific affiliate campaigns.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="home">
+  <div class="card-top">
+    <h3 class="brand-name">Stanley (Quencher)</h3>
+    <span class="priority-badge priority-new">Opportunity</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Home / Drinkware</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Rank</div>
+      <div class="detail-value">#1 Home & Kitchen 2024</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.stanley1913.com" target="_blank">stanley1913.com</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Tumblers</span>
+    <span class="tag">Drinkware</span>
+    <span class="tag">Viral on TikTok</span>
+    <span class="tag">Influencer-driven growth</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Stanley's entire resurgence was driven by influencer marketing (The Buy Guide). They already believe deeply in influencer ROI. Pitch Amazon-specific affiliate scaling.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="home">
+  <div class="card-top">
+    <h3 class="brand-name">Owala</h3>
+    <span class="priority-badge priority-new">Opportunity</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Home / Water Bottles</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Rank</div>
+      <div class="detail-value">#1 Kitchen & Dining</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://owalalife.com" target="_blank">owalalife.com</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Water Bottles</span>
+    <span class="tag">FreeSip</span>
+    <span class="tag">Gen Z favorite</span>
+    <span class="tag">Viral product</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Owala battles Stanley for the #1 drinkware spot. Huge organic influencer buzz. An Amazon affiliate program through ainfluencer would channel this existing enthusiasm into tracked sales.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="beauty">
+  <div class="card-top">
+    <h3 class="brand-name">Honest Company</h3>
+    <span class="priority-badge priority-new">Opportunity</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Beauty / Baby / Home</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Founder</div>
+      <div class="detail-value">Jessica Alba</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.honest.com" target="_blank">honest.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Storefront</div>
+      <div class="detail-value">Yes, featured storefront</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Clean Beauty</span>
+    <span class="tag">Baby Products</span>
+    <span class="tag">Celebrity-founded</span>
+    <span class="tag">Amazon Storefront</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Celebrity-founded brand with strong Amazon storefront. They understand influencer value intrinsically. Target their e-commerce/partnerships team for Amazon-specific affiliate campaigns.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="beauty">
+  <div class="card-top">
+    <h3 class="brand-name">Clinique (on Amazon)</h3>
+    <span class="priority-badge priority-new">Opportunity</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Beauty / Premium Skincare</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Parent Company</div>
+      <div class="detail-value">Estee Lauder</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.clinique.com" target="_blank">clinique.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Feature</div>
+      <div class="detail-value">Premium Beauty Storefront</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Premium Skincare</span>
+    <span class="tag">Makeup</span>
+    <span class="tag">Amazon Premium Beauty</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Clinique's Amazon storefront includes live chat and skin analysis. They're investing heavily in Amazon as a channel. Pitch affiliate influencer marketing to their Amazon e-commerce team.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="beauty">
+  <div class="card-top">
+    <h3 class="brand-name">Lancome (on Amazon)</h3>
+    <span class="priority-badge priority-new">Opportunity</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Beauty / Luxury</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Parent Company</div>
+      <div class="detail-value">L'Oreal</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.lancome-usa.com" target="_blank">lancome-usa.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Feature</div>
+      <div class="detail-value">Premium Beauty Storefront</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Luxury Beauty</span>
+    <span class="tag">Skincare</span>
+    <span class="tag">Fragrance</span>
+    <span class="tag">Amazon Premium</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Another L'Oreal brand on Amazon Premium Beauty. Bundle the pitch with CeraVe for a L'Oreal portfolio deal covering both mass and prestige segments.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="beauty">
+  <div class="card-top">
+    <h3 class="brand-name">Charlotte Tilbury (on Amazon)</h3>
+    <span class="priority-badge priority-new">Opportunity</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Beauty / Luxury Makeup</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Parent Company</div>
+      <div class="detail-value">Puig</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.charlottetilbury.com" target="_blank">charlottetilbury.com</a></div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Note</div>
+      <div class="detail-value">Just launched Amazon storefront in 2025</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Luxury Makeup</span>
+    <span class="tag">New to Amazon</span>
+    <span class="tag">High-value products</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Charlotte Tilbury JUST launched on Amazon in 2025. They're in the "figuring out Amazon" phase and most open to new channels. Perfect timing for an ainfluencer pitch.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="supplements">
+  <div class="card-top">
+    <h3 class="brand-name">Nutrafol</h3>
+    <span class="priority-badge priority-new">Opportunity</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Supplements / Hair Growth</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Rank</div>
+      <div class="detail-value">Top 25 Beauty (3 consecutive quarters)</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://nutrafol.com" target="_blank">nutrafol.com</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Hair Supplements</span>
+    <span class="tag">Women's Health</span>
+    <span class="tag">Premium</span>
+    <span class="tag">DTC + Amazon</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> High price point ($88/bottle) means higher affiliate commissions per sale. Hair transformation content performs extremely well on social media. Perfect for before/after influencer campaigns.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="home">
+  <div class="card-top">
+    <h3 class="brand-name">Peloton (on Amazon)</h3>
+    <span class="priority-badge priority-new">Opportunity</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Fitness / Equipment</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Feature</div>
+      <div class="detail-value">Featured Storefront</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.onepeloton.com" target="_blank">onepeloton.com</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Bikes</span>
+    <span class="tag">Treadmills</span>
+    <span class="tag">Accessories</span>
+    <span class="tag">Amazon Storefront</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> Peloton expanded to Amazon to reach new customers. Fitness influencers with Amazon affiliate links can drive high-value equipment sales and accessories.
+  </div>
+</div>
+
+<div class="merchant-card" data-category="home">
+  <div class="card-top">
+    <h3 class="brand-name">Weber (on Amazon)</h3>
+    <span class="priority-badge priority-new">Opportunity</span>
+  </div>
+  <div class="card-details">
+    <div class="detail-item">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">Home / Outdoor Grilling</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Amazon Feature</div>
+      <div class="detail-value">Featured Storefront</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Website</div>
+      <div class="detail-value"><a href="https://www.weber.com" target="_blank">weber.com</a></div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag">Grills</span>
+    <span class="tag">BBQ Accessories</span>
+    <span class="tag">Outdoor Cooking</span>
+  </div>
+  <div class="outreach-note">
+    <strong>Outreach angle:</strong> BBQ/cooking content is evergreen on YouTube. Seasonal campaigns around summer grilling and holiday cooking. High-ticket items mean bigger commissions per sale.
+  </div>
+</div>
+
+</div>
+
+<!-- TOOLS SECTION -->
+
+<div class="tools-section">
+  <h3>Tools to Find More Merchants</h3>
+  <p style="color: var(--fg-muted); font-size: 0.9rem; margin-top: 0;">Use these tools to expand this list with thousands more leads.</p>
+  <div class="tool-grid">
+    <div class="tool-item">
+      <div class="tool-name">Jungle Scout Supplier Database</div>
+      <div class="tool-desc">Search 2M+ Amazon sellers by revenue, category, and contact info. From $49/mo.</div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-name">SmartScout</div>
+      <div class="tool-desc">2.28M indexed sellers with revenue estimates, brand portfolios, and geography. From $29/mo.</div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-name">Helium 10</div>
+      <div class="tool-desc">Brand analytics, keyword tracking, and seller identification tools. From $39/mo.</div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-name">Apollo.io</div>
+      <div class="tool-desc">Find decision-maker emails and LinkedIn profiles at any company. Free tier available.</div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-name">Hunter.io</div>
+      <div class="tool-desc">Find email addresses associated with any domain. Free for 25 searches/mo.</div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-name">LinkedIn Sales Navigator</div>
+      <div class="tool-desc">Advanced search for "Amazon Brand Manager" and similar titles. From $99/mo.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  <p>Compiled for ainfluencer outreach team. Contact data sourced from public records, company websites, and business databases.</p>
+  <p>For the full outreach strategy with email templates and cadences, see the companion document.</p>
+</div>
+
+<script>
+function filterCards(category) {
+  const cards = document.querySelectorAll('.merchant-card');
+  const buttons = document.querySelectorAll('.filter-btn');
+  let visible = 0;
+
+  buttons.forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  cards.forEach(card => {
+    if (category === 'all' || card.dataset.category === category) {
+      card.hidden = false;
+      visible++;
+    } else {
+      card.hidden = true;
+    }
+  });
+
+  const label = category === 'all' ? 'all' : category;
+  document.getElementById('countBar').textContent =
+    `Showing ${visible} merchant${visible !== 1 ? 's' : ''}${category !== 'all' ? ' in ' + category : ''}`;
+}
+</script>
